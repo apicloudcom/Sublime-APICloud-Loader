@@ -53,10 +53,13 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
             logging.info('checkBasicInfo: cannot find appLoader')
             return -1
         import platform
-        if 'Darwin' in platform.system() or 'Linux' in platform.system():
+        if 'darwin' in platform.system().lower() :
             self.__adbExe='"'+os.path.join(self.__curDir,'tools','adb')+'"'    
-        else:                
+        elif 'windows' in platform.system().lower():                
             self.__adbExe='"'+os.path.join(self.__curDir,'tools','adb.exe')+'"'
+        else:
+            logging.info('checkBasicInfo: the platform is not support')
+            return -1
         logging.info("checkBasicInfo: adbCmd is "+self.__adbExe)
         with open(os.path.join(self.__curDir,'appLoader','apicloud-loader','load.conf')) as f:
             config=json.load(f)
@@ -134,11 +137,15 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
         rtnCode=0
         stdout=''
         stderr=''
-        if 'Darwin' in platform.system():
-            output=os.popen(cmd)
-            stdout=str(output.read())
-            return (0,stdout,stderr)
-        else:
+
+        if 'darwin' in platform.system().lower():
+            p=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+            stdoutbyte,stderrbyte=p.communicate()
+            stdout=str(stdoutbyte)
+            stderr=str(stderrbyte)
+            rtnCode=p.returncode
+
+        elif 'windows' in platform.system().lower():
             if 'logFile'==self.__cmdLogType:
                 p=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
                 stdoutbyte,stderrbyte=p.communicate()
@@ -149,6 +156,8 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
                 p=subprocess.Popen(cmd,shell=False)
                 p.wait()
                 rtnCode=p.returncode
+        else:
+            logging.info('runShellCommand: the platform is not support')
         return (rtnCode,stdout,stderr)       
 
     def pushDirOrFileCmd(self, serialNumber, srcPath, appId):
