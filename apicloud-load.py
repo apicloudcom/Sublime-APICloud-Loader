@@ -3,7 +3,7 @@ import sublime,sublime_plugin
 import os,platform,re,logging,subprocess,json,sys,traceback
 
 curDir = os.path.dirname(os.path.realpath(__file__))
-print (curDir)
+
 class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
     """docstring for ApicloudLoaderCommand"""
     __adbExe='' 
