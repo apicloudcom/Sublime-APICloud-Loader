@@ -2,6 +2,8 @@
 import sublime,sublime_plugin
 import os,platform,re,logging,subprocess,json,sys,traceback
 
+curDir = os.path.dirname(os.path.realpath(__file__))
+print (curDir)
 class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
     """docstring for ApicloudLoaderCommand"""
     __adbExe='' 
@@ -11,7 +13,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
     __pendingVersion=''
     __cmdLogType=''
     def __init__(self,arg):
-        self.__curDir=os.path.join(sublime.packages_path(),'apicloud-load')
+        self.__curDir=curDir
     
     def is_visible(self, dirs): 
         return len(dirs) > 0
@@ -107,7 +109,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
 
     def getLoaderType(self,appId):
         logging.info('begin getLoaderType')
-        appIdPath=os.path.join(sublime.packages_path(),'apicloud-load','appLoader','custom-loader',appId)
+        appIdPath=os.path.join(self.__curDir,'appLoader','custom-loader',appId)
         logging.info('getLoaderType: appIdPath is '+os.path.join(appIdPath,'load.conf'))
         
         if os.path.exists(os.path.join(appIdPath,'load.conf')) and os.path.exists(os.path.join(appIdPath,'load.apk')):
@@ -343,7 +345,7 @@ class NewApicloudAppCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, dir, name):
         import shutil
-        shutil.copytree(os.path.join(sublime.packages_path(),'apicloud-load','appLoader','default'),os.path.join(dir, name))
+        shutil.copytree(os.path.join(curDir,'appLoader','default'),os.path.join(dir, name))
         desFile=os.path.join(dir, name)+"\\config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
@@ -366,7 +368,7 @@ class CompressWidgetCommand(sublime_plugin.WindowCommand):
         logging.basicConfig(level=logging.DEBUG,
             format='%(asctime)s %(message)s',
             datefmt='%Y %m %d  %H:%M:%S',
-            filename=os.path.join(sublime.packages_path(),'apicloud-load','apicloud.log'),
+            filename=os.path.join(curDir,'apicloud.log'),
             filemode='a')
         dirname=dirs[0]
         filelist=[]  
