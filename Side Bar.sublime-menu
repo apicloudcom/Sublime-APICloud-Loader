@@ -1,5 +1,4 @@
 [
-	{ "caption": "-", "id": "apicloud_command" },
 	{ "caption": "真机同步..", "command": "apicloud_loader", "args": {"dirs": []} },
 	{ "caption": "新建APICloud项目..", "command": "new_apicloud_app", "args": {"dirs": []} },
 	{ "caption": "压缩Widget包..", "command": "compress_widget", "args": {"dirs": []} }
