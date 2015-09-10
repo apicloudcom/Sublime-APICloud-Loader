@@ -37,9 +37,8 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
             self.load(dirs[0])
         except:
             logging.info('run: exception happened as below')
-            info=sys.exc_info()
-            for file, lineno, function, text in traceback.extract_tb(info[2]):
-                logging.info(text)
+            errMsg=traceback.format_exc()
+            logging.info(errMsg)
             sublime.error_message(u'真机同步出现异常')
 
         sublime.status_message(u'真机同步完成')
