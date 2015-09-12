@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>index</title>
+    <link rel="stylesheet" type="text/css" href="./css/api.css" />
+    <link rel="stylesheet" type="text/css" href="./css/common.css" />
+    <link rel="stylesheet" type="text/css" href="./css/base.css" />
+    <style>
+        .header-content{
+            background-color: #f2f2f2;
+            line-height: 40px;
+            font-size: 18px;
+        }
+        .search-box{
+            position: relative;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+            padding-right: 3px;
+            padding-top: 4px;
+        }
+        .search-box-inner{
+            height: 40px;
+            background-color: #FFF;
+            border-radius: 4px;
+        }
+        .search-box-inner .search-fake-input{
+            height: 100%;
+            line-height: 40px;
+            padding-left: 3px;
+            color: #B8B8B8;
+            font-size: 14px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+
+        }
+    </style>
+</head>
+<body>
+    <div id="wrap">
+        <div id="header">
+            <div class="header-content clearfix">
+                <div class="search-box" tapmode data-title="" onclick="">
+                    APICloud
+                </div>
+            </div>
+        </div>
+        <div id="main">
+                
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript" src="./script/common.js"></script>
+<script type="text/javascript">
+    var indexToWeb = function(options){
+        api.openWin({
+            name: 'webpage',
+            url: './html/win_webpage.html',
+            pageParam: options,
+            bounces: false,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            },
+            reload: true,
+            showProgress: true
+        });
+    };
+    var indexToNativeSearch = function(options){
+        api.openWin({
+            name: 'nativesearch',
+            url: './html/win_search.html',
+            pageParam: options,
+            bounces: false,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+    };
+    apiready = function(){
+        // 阻止首页弹动
+        api.setWinAttr({
+            bounces: false
+        });
+        // 阻止首页弹动 end
+        var header = $api.byId('header');
+        $api.fixIos7Bar(header); 
+        window.headerPos = $api.offset(header);
+        var main = $api.byId('main');
+        window.mainPos = $api.offset(main);
+        api.openFrame({
+            name: 'home',
+            url: 'html/win_home.html',
+            bounces: false,
+            rect: {
+                x: 0,
+                y: headerPos.h,
+                w: 'auto',
+                h: mainPos.h
+            }
+        });
+    };
+</script>
+</html>
