@@ -1,4 +1,5 @@
- <widget id="A0000000000001"  version="0.0.1">
+<?xml version="1.0" encoding="UTF-8"?>
+<widget id="A0000000000001"  version="0.0.1">
     <name>Hello APP</name>
     <description>
         Example For APICloud.

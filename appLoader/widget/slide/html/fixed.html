@@ -1,54 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>fixedPane</title>
     <link rel="stylesheet" type="text/css" href="../css/api.css"/>
-    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
     <style>
         html, body {
-            background-color: #dfdede !important;
+            background-color: #dfdede;
         }
-
         li {
-            position: relative;
             padding: 3px 10px;
             border-bottom: 1px solid #d4d3d3;
-            background-size: 10px;
-            background-repeat: no-repeat;
-            background-position: 78%;
         }
-
-        li:first-child {
-            height: 46px;
-            display: -webkit-box;
-            -webkit-box-align: center;
-        }
-
         .liActive {
             background-color: #3ABA63;
         }
-
         li a {
             display: block;
             padding: 10px 30px;
-            background-size: 20px;
-            background-repeat: no-repeat;
-            background-position: left;
         }
-
     </style>
 </head>
 <body>
 <nav>
     <ul>
-        <li tapmode="liActive" onclick=""><a class="home active">首页</a></li>
-        <li tapmode="liActive" onclick=""><a class="my">频道1</a></li>
-        <li class="arrowD " tapmode="liActive" onclick=""><a class="nearby">频道2</a></li>
-        <li class="arrowD" tapmode="liActive" onclick=""><a class="domestic">频道3</a></li>
-        <li tapmode="liActive" onclick=""><a class="maldives">频道4</a></li>
-        <li tapmode="liActive" onclick=""><a class="Europe">频道5</a></li>
+        <li tapmode="liActive" onclick=""><a class="home">首页</a></li>
+        <li tapmode="liActive" onclick=""><a class="nav1">频道1</a></li>
+        <li tapmode="liActive" onclick=""><a class="nav2">频道2</a></li>
+        <li tapmode="liActive" onclick=""><a class="nav3">频道3</a></li>
+        <li tapmode="liActive" onclick=""><a class="nav4">频道4</a></li>
+        <li tapmode="liActive" onclick=""><a class="nav5">频道5</a></li>
     </ul>
 </nav>
 </body>
@@ -56,9 +38,10 @@
 <script>
 apiready = function () {
     api.setStatusBarStyle({
-        style: 'dark'
+        style: 'dark',
+        color: '#000'
     });
-    $api.fixIos7Bar($api.dom('nav'));
+    $api.fixStatusBar($api.dom('nav'));
 };
 </script>
 </html>

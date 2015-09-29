@@ -3,18 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
-    <title>slide</title>
+    <title>slidPane</title>
     <link rel="stylesheet" type="text/css" href="../css/api.css"/>
     <style>
-        * {
-            outline: 0;
-        }
-        /*header*/
         header {
             background-color: #f2f2f2;
             border-bottom: 1px solid #f2f2f2;
         }
-
         .header {
             display: -webkit-box;
             display: -webkit-flex;
@@ -22,9 +17,6 @@
         }
         .header a{
             display: block;
-            background-size: 30px;
-            background-repeat: no-repeat;
-            background-position: center;
             padding: 20px;
         }
         .title {
@@ -35,18 +27,18 @@
             text-align: center;
         }
         .header .menu {
+            background-size: 30px;
+            background-repeat: no-repeat;
+            background-position: center;
             background-image: url("../image/menu.png");
         }
-        /*header*/
     </style>
 </head>
 <body>
 <header>
-    <div class="index header ">
+    <div class="header">
         <a class="menu" tapmode="" onclick="sliding()"></a>
-        <div class="title" >
-            APICloud
-        </div>
+        <div class="title" >APICloud</div>
         <a></a>
     </div>
 </header>
@@ -56,7 +48,7 @@
         api.openSlidPane({type: 'left'});
     }
     apiready = function () {
-	    $api.fixIos7Bar($api.dom('.title'));
+	    $api.fixStatusBar($api.dom('.header'));
         api.addEventListener({
             name: 'keyback'
         }, function(ret, err){

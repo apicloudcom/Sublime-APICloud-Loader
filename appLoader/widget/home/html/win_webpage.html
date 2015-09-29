@@ -5,114 +5,59 @@
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
     <title>title</title>
     <link rel="stylesheet" type="text/css" href="../css/api.css" />
-    <link rel="stylesheet" type="text/css" href="../css/common.css" />
-    <link rel="stylesheet" type="text/css" href="../css/base.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <style>
-        #header{
-            background-color: #FCFCFC;
-        }
-        .btn-box{
-            width: 56px;
-            height: 48px;
-        }
-        .btn-back{
-            width: 40px;
-            margin-left: 1em;
-            background: url(../image/back_normal.png) center center no-repeat;
-            background-size: 100%;
-            padding-top: 0;
-        }
-        .btn-box img{
-            margin: 0 auto;
-            width: 40px;
-            display: block;
-            padding-top: 4px;
-        }
-        .btn-box:active{
-            background-color: #82D0ED;
-        }
-        .btn-back:active{
-            background:#82D0ED url(../image/back_hover.png) center center no-repeat;
-            background-size: 100%;
-        }
-        #header .title{
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
-            flex: 1;
-            font-size: 1.1em;
-            line-height: 48px;
-            color: #585858;
-            text-align: left;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        #header .header-content{
-            border-bottom: 1px solid #BABABA;
-        }
+        header{ background-color: #FCFCFC; line-height: 42px; height: 42px; position: relative; }
+        header b{ width: 42px; height: 100%; display: inline-block; position: relative; z-index: 1; background: url() no-repeat center; background-size: 70% auto;  }
+        header b.ic-back{ background-image: url(../image/ic-back.png); }
+        header b.ic-check{ background-image: url(../image/ic-check.png); float: right; }
+        header .title{ position: absolute; left: 0; bottom: 0; right: 0;  text-align: center; font-size: 18px;  }
     </style>
 </head>
-<body ontouchstart="">
-    <div id="wrap">
-        <div id="header">
-            <div class="header-content clearfix">
-                <div class="btn-box btn-back" tapmode onclick="backOrClose();"></div>
-                <h5 class="title">&nbsp;</h5>
-                <div class="btn-box" tapmode onclick="api.closeWin();">
-                    <img src="../image/webview_close.png" alt="">
-                </div>
-                <div class="btn-box" tapmode onclick="">
-                    <img src="../image/more_normal.png" alt="">
-                </div>
-            </div>
-        </div>
-        <div id="main">
+<body>
+    <div id="wrap" class="flex-wrap flex-vertical" >
+        <header class="border-b" >
+            <b tapmode="hover" onclick="api.closeWin();" class="ic-back"></b>
+            <div class="title"></div>
+            <b tapmode="hover" onclick="funActionSheet();"  class="ic-check"></b>
+        </header>
+        <div id="main" class="flex-con" >
                 
         </div>
     </div>
 </body>
+</html>
 <script type="text/javascript" src="../script/api.js"></script>
-<script type="text/javascript" src="../script/common.js"></script>
 <script type="text/javascript">
-    var backOrClose = function(){
-        // 在安卓上if(history.back())有问题，总是执行closeWin();
-        var str = 'if (history.back()) {history.go(-1);} else{if(api){api.closeWin();}}';
-
-        api.execScript({
-            frameName: 'webframe',
-            script: str
+    apiready = function(){
+        $api.fixStatusBar( $api.dom('header') );
+        $api.dom('.title').innerHTML = api.pageParam.name;
+        api.openFrame({
+            name: 'frm_mine',
+            url: './frm_mine.html',
+            rect: {
+                x: 0, 
+                y: $api.dom('header').offsetHeight, 
+                w: api.winWidth, 
+                h: $api.dom('#main').offsetHeight
+            },
+            bounces : true,
+            pageParam: {
+                name: api.pageParam.name
+           }
         });
     };
-    var openFrameFn = function(){
-        api.openFrame({
-            name: 'webframe',
-            url: curUrl,
-            bounces: false,
-            rect: {
-                x: 0,
-                y: headerPos.h,
-                w: 'auto',
-                h: mainPos.h
-            }
-        });  
-    };
-    apiready = function(){
-        var title = api.pageParam.title;
-        var url = api.pageParam.url;
-        var frameName = api.pageParam.frameName;
-
-        var header = $api.byId('header');
-        $api.fixIos7Bar(header); 
-        window.headerPos = $api.offset(header);
-        var main = $api.byId('main');
-        window.mainPos = $api.offset(main);
-        
-        window.curUrl = url;
-        if (frameName) {
-            curUrl = frameName+'.html';
-        }
-        $api.dom('#header .title').innerHTML = title;
-        openFrameFn();
-    };
+    
+    function funActionSheet(){
+        api.actionSheet({
+            title: '底部弹出框',
+            cancelTitle: '取消',
+            destructiveTitle: '红色警告按钮',
+            buttons: ['按钮1','按钮2','按钮3']
+        },function(ret,err){
+            // api.alert({
+            //     msg: '你刚点击了'+ret.buttonIndex
+            // });
+        });
+    }
 </script>
-</html>

@@ -4,213 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
     <title>底部导航</title>
-    <link rel="stylesheet" type="text/css" href="css/api.css"/>
-
+    <link rel="stylesheet" type="text/css" href="./css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="./css/style.css"/>
     <style>
-        html, body {
-            height: 100%;
-            width: 100%;
-        }
-
-        #wrap {
-            height: 100%;
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-box-orient: vertical;
-            -webkit-flex-flow: column;
-            flex-flow: column;
-        }
-
-        #main {
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
-            flex: 1;
-        }
-
-        #footer {
-            width: 100%;
-            text-align: center;
-            height: 56px;
-            line-height: 55px;
-            background-color: #f2f2f2;
-        }
-
-        ul {
-
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: flex;
-        }
-
-        .cloud {
-            background-image: url(image/bottombtn0101.png);
-        }
-
-        .client {
-            background-image: url(image/bottombtn0201.png);
-        }
-
-        .dev {
-            background-image: url(image/bottombtn0301.png);
-        }
-
-        .doc {
-            background-image: url(image/bottombtn0401.png);
-        }
-
-        #footer li {
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
-            flex: 1;
-            height: 55px;
-        }
-
-        .bottom_btn {
-            background-position-y: 4px;
-            padding-top: 16px;
-            font-size: 12px;
-            color: #323237;
-            width: 99%;
-            height: 39px;
-            background-repeat: no-repeat no-repeat;
-            background-position-x: center;
-            background-size: 30px;
-        }
-
-        .active .cloud {
-            background-image: url(image/bottombtn0102.png);
-        }
-
-        .active .client {
-            background-image: url(image/bottombtn0202.png);
-        }
-
-        .active .dev {
-            background-image: url(image/bottombtn0302.png);
-        }
-
-        .active .doc {
-            background-image: url(image/bottombtn0402.png);
-        }
-
-        .active .bottom_btn {
-            color: #6ab494;
-            background-size: 30px;
-        }
-
-        .topbar {
-            background: #f2f2f2;
-            height: 50px;
-            border-bottom: 1px solid #DDDFE3;
-            line-height: 50px;
-            text-align: center;
-            display: none;
-            color: #323237;
-        }
-
-        .activebar {
-            display: block;
-        }
+        header{ background-color: #f2f2f2; }
+        header ul li { height: 50px; line-height: 50px; text-align: center; display: none; color: #323237; position: relative;font-size: 18px;  }
+        header ul li.active{ display: block; }
+        #footer{  background-color: #f2f2f2; }
+        #footer ul li{  padding-top: 36px; padding-bottom: 4px; background: url() no-repeat center 2px; background-size: auto 30px; text-align: center; }
+        #footer ul li.active{ color: #6ab494; }
+        #footer ul li:nth-child(1){ background-image: url(./image/bottombtn0101.png); }
+        #footer ul li:nth-child(2){ background-image: url(./image/bottombtn0201.png); }
+        #footer ul li:nth-child(3){ background-image: url(./image/bottombtn0301.png); }
+        #footer ul li:nth-child(4){ background-image: url(./image/bottombtn0401.png); }
+        #footer ul li:nth-child(1).active{ background-image: url(./image/bottombtn0102.png); }
+        #footer ul li:nth-child(2).active{ background-image: url(./image/bottombtn0202.png); }
+        #footer ul li:nth-child(3).active{ background-image: url(./image/bottombtn0302.png); }
+        #footer ul li:nth-child(4).active{ background-image: url(./image/bottombtn0402.png); }
     </style>
 </head>
 <body>
-<div id="wrap">
+<div id="wrap" class="flex-wrap flex-vertical">
     <header>
-        <div id="cloud" class="topbar  activebar">
-            云API
-        </div>
-        <div id="client" class="topbar  ">
-            端API
-        </div>
-        <div id="dev" class="topbar ">
-            开发
-        </div>
-        <div id="doc" class="topbar ">
-            文档
-        </div>
+        <ul>
+            <li class="border-b active" >云API</li>
+            <li class="border-b" >端API</li>
+            <li class="border-b" >开发</li>
+            <li class="border-b" >文档</li>
+        </ul>
     </header>
-    <div id="main">
+    <div id="main" class="flex-con">
 
     </div>
-    <div id="footer">
-        <ul>
-            <li tapmode="active" class="active" onclick="randomSwitchBtn(this,'cloud',0)">
-                <a class="bottom_btn cloud">云API</a>
-            </li>
-
-            <li tapmode="active" onclick="randomSwitchBtn(this,'client',1)">
-                <a class="bottom_btn client ">端API</a>
-            </li>
-
-            <li tapmode="active" onclick="randomSwitchBtn(this,'dev',2)">
-                <a class="bottom_btn dev ">开发</a>
-            </li>
-
-            <li tapmode="active" onclick="randomSwitchBtn(this,'doc',3)">
-                <a class="bottom_btn doc ">文档</a>
-            </li>
+    <div id="footer" class="border-t">
+        <ul class="flex-wrap" >
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con active" >云API</li>
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con" >端API</li>
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con" >开发</li>
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con" >文档</li>
         </ul>
     </div>
 </div>
 </body>
+</html>
 <script type="text/javascript" src="script/api.js"></script>
 <script type="text/javascript">
     apiready = function () {
-        var $header = $api.dom('header');
-        $api.fixIos7Bar($header);
-        var $body = $api.dom('body');
-        var $footer = $api.byId('footer');
-        var header_h = $api.offset($header).h;
-        var body_h = $api.offset($body).h;
-        var footer_h = $api.offset($footer).h;
-        var rect_h = body_h - header_h - footer_h;
+        $api.fixStatusBar( $api.dom('header') );
+        api.setStatusBarStyle({
+            style: 'dark',
+            color: '#6ab494'
+        });
+        funIniGroup();
+    }
+
+    function funIniGroup(){
+        var eHeaderLis = $api.domAll('header li'),
+            frames = [];
+        for (var i = 0,len = eHeaderLis.length; i < len; i++) {
+                frames.push( { 
+                    name: 'frame'+i, 
+                    url: './html/frame'+i+'.html', 
+                    bgColor : 'rgba(0,0,0,.2)',
+                    bounces:true
+                } )
+        }
         api.openFrameGroup({
             name: 'group',
             scrollEnabled: false,
-            rect: {x: 0, y: header_h, w: 'auto', h: rect_h},
+            rect: {
+                x: 0, 
+                y: $api.dom('header').offsetHeight, 
+                w: api.winWidth, 
+                h: $api.dom('#main').offsetHeight
+            },
             index: 0,
-            frames: [
-                {
-                    name: 'frame1',
-                    url: 'html/frame1.html'
-                },
-                {
-                    name: 'frame2',
-                    url: 'html/frame2.html'
-                },
-                {
-                    name: 'frame3',
-                    url: 'html/frame3.html'
-                },
-                {
-                    name: 'frame4',
-                    url: 'html/frame4.html'
-                }
-            ]
+            frames: frames
         }, function (ret, err) {
-        });
 
+        });
     }
+
     // 随意切换按钮
-    function randomSwitchBtn(obj, name, index) {
-        var $header = $api.dom('header');
-        var $titleBar = $api.domAll($header, '.topbar');
-        for (var i = 0; i < $titleBar.length; i++) {
-            $api.removeCls($titleBar[i], 'activebar');
+    function randomSwitchBtn( tag ) {
+        if( tag == $api.dom('#footer li.active') )return;
+        var eFootLis = $api.domAll('#footer li'),
+            eHeaderLis = $api.domAll('header li'),
+            index = 0;
+        for (var i = 0,len = eFootLis.length; i < len; i++) {
+            if( tag == eFootLis[i] ){
+                index = i;
+            }else{
+                $api.removeCls(eFootLis[i], 'active');
+                $api.removeCls(eHeaderLis[i], 'active');
+            }
         }
-        $api.addCls($api.byId(name), 'activebar');
-        var $footer = $api.byId('footer');
-        var $footerBar = $api.domAll($footer, 'li');
-        for (var j = 0; j < $footerBar.length; j++) {
-            $api.removeCls($footerBar[j], 'active');
-        }
-        $api.addCls(obj, 'active');
+        $api.addCls( eFootLis[index], 'active');
+        $api.addCls( eHeaderLis[index], 'active');
         api.setFrameGroupIndex({
             name: 'group',
             index: index
         });
-
     }
 </script>
-</html>
