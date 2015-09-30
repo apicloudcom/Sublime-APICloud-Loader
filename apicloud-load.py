@@ -173,7 +173,10 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
         shutil.copytree(srcPath,tmpPath)
         for (p,d,f) in os.walk(tmpPath):  
             if p.find('.svn')>0:  
-                os.popen('rd /s /q %s'%p) 
+				if 'windows' in platform.system().lower():
+					os.popen('rd /s /q %s'%p) 
+				elif 'darwin' in platform.system().lower():
+					os.popen('rm -rf %s'%p) 
        
         logging.info('begin pushDirOrFileCmd from '+srcPath+' for appId '+appId)
         sublime.status_message(u'开始推送widget包')
