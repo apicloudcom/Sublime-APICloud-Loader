@@ -181,7 +181,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
         logging.info('begin pushDirOrFileCmd from '+srcPath+' for appId '+appId)
         sublime.status_message(u'开始推送widget包')
         desPath='/sdcard/UZMap/wgt/'+appId
-        pushCmd=self.__adbExe+' -s '+serialNumber+' push '+srcPath+' '+desPath
+        pushCmd=self.__adbExe+' -s '+serialNumber+' push '+tmpPath+' '+desPath
         logging.info('pushDirOrFileCmd: pushCmd is '+pushCmd)
         (rtnCode,stdout,stderr)=self.runShellCommand(pushCmd)
         outputMsg=stdout+stderr
