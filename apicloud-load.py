@@ -4,6 +4,110 @@ import os,platform,re,logging,subprocess,json,sys,traceback,shutil
 
 curDir = os.path.dirname(os.path.realpath(__file__))
 
+html = '''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="api.css"/>
+    <style>
+        body{
+            
+        }
+    </style>
+</head>
+<body>
+    
+</body>
+<script type="text/javascript" src="api.js"></script>
+<script type="text/javascript">
+    apiready = function(){
+        
+    };
+</script>
+</html>'''
+class InsertApicloudHtmlCommand(sublime_plugin.TextCommand):
+    def run(self, edit, user_input=None):
+        self.edit = edit
+        v = self.view
+        print (v)
+        # edit = v.begin_edit() 
+        v.insert(edit, 0, html)
+        v.end_edit(edit)
+        print (v)
+
+class ApicloudNewHtmlCommand(sublime_plugin.WindowCommand):
+    def run(self, dirs):
+        print (dirs)
+        v = self.window.new_file()
+        v.run_command('insert_apicloud_html')
+ 
+        if len(dirs) == 1:
+            v.settings().set('default_dir', dirs[0])
+
+    def is_visible(self, dirs):
+        return len(dirs) == 1
+
+class ApicloudLoaderKeyCommand(sublime_plugin.TextCommand):
+    """docstring for ApicloudLoaderKeyCommand"""
+    
+    def isWidgetPath(self, path):
+        isFound = False
+        appFileList=os.listdir(path)
+        if 'config.xml' in appFileList and 'index.html' in appFileList:
+            with open(os.path.join(path,"config.xml"),encoding='utf-8') as f:
+                fileContent=f.read()
+                r=re.compile(r"widget.*id.*=.*(A[0-9]{13})\"")
+                searchResList=r.findall(fileContent)
+                if len(searchResList)>0:
+                    isFound = True
+        return isFound
+
+    def getWidgetPath(self, path):
+        rootDir = os.path.abspath(path).split(os.path.sep)[0]+os.path.sep
+        dirList = []
+        for x in range(0,10):
+            path = os.path.dirname(path)
+            dirList.append(path)
+            if path == rootDir:
+                break
+
+        syncPath=''
+        for path in dirList:
+            if self.isWidgetPath(path):
+                syncPath = path
+                break
+        return syncPath
+
+    def run(self, edit):
+        logging.basicConfig(level=logging.DEBUG,
+            format='%(asctime)s %(message)s',
+            datefmt='%Y %m %d  %H:%M:%S',
+            filename=os.path.join(curDir,'apicloud.log'),
+            filemode='a')
+        sublime.status_message(u'开始真机同步')
+        logging.info('*'*30+'begin key sync'+'*'*30)
+
+        file_name=self.view.file_name()
+        syncPath=self.getWidgetPath(file_name)
+        if len(syncPath) > 0:
+            logging.info('key sync dir is '+syncPath)
+            try:
+                loader = ApicloudLoaderCommand('')
+                loader.load(syncPath)
+            except:
+                logging.info('run: exception happened as below')
+                errMsg=traceback.format_exc()
+                logging.info(errMsg)
+                # print(errMsg)
+                sublime.error_message(u'真机同步出现异常')
+            sublime.status_message(u'真机同步完成')
+            logging.info('*'*30+'sync complete'+'*'*30)
+        else:
+            sublime.error_message(u'请确保当前文件所在目录正确')
+        return
+
 class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
     """docstring for ApicloudLoaderCommand"""
     __adbExe='' 

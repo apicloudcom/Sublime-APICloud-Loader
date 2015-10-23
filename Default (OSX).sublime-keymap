@@ -1,0 +1,3 @@
+[
+	{ "keys": ["super+r"], "command": "apicloud_loader_key" },
+]
