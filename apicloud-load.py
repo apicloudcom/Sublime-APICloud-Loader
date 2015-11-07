@@ -588,7 +588,7 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
             sublime.error_message(u'IOS真机同步失败')
         else:
             logging.info('loadIos: ios sync success.')
-            sublime.message_dialog(u'IOS真机同步成功')
+            sublime.message_dialog(u'IOS真机同步完成')
 
     def getAppId(self, srcPath):
         logging.info('begin getAppId: srcPath is '+srcPath)
