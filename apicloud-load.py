@@ -31,15 +31,11 @@ class InsertApicloudHtmlCommand(sublime_plugin.TextCommand):
     def run(self, edit, user_input=None):
         self.edit = edit
         v = self.view
-        print (v)
-        # edit = v.begin_edit() 
         v.insert(edit, 0, html)
         v.end_edit(edit)
-        print (v)
 
 class ApicloudNewHtmlCommand(sublime_plugin.WindowCommand):
     def run(self, dirs):
-        print (dirs)
         v = self.window.new_file()
         v.run_command('insert_apicloud_html')
  
@@ -49,36 +45,67 @@ class ApicloudNewHtmlCommand(sublime_plugin.WindowCommand):
     def is_visible(self, dirs):
         return len(dirs) == 1
 
-class ApicloudLoaderKeyCommand(sublime_plugin.TextCommand):
-    """docstring for ApicloudLoaderKeyCommand"""
-    
-    def isWidgetPath(self, path):
-        isFound = False
-        appFileList=os.listdir(path)
-        if 'config.xml' in appFileList and 'index.html' in appFileList:
-            with open(os.path.join(path,"config.xml"),encoding='utf-8') as f:
-                fileContent=f.read()
-                r=re.compile(r"widget.*id.*=.*(A[0-9]{13})\"")
-                searchResList=r.findall(fileContent)
-                if len(searchResList)>0:
-                    isFound = True
-        return isFound
+############################################global function############################
+def isWidgetPath(path):
+    isFound = False
+    appFileList=os.listdir(path)
+    if 'config.xml' in appFileList and 'index.html' in appFileList:
+        with open(os.path.join(path,"config.xml"),encoding='utf-8') as f:
+            fileContent=f.read()
+            r=re.compile(r"widget.*id.*=.*(A[0-9]{13})\"")
+            searchResList=r.findall(fileContent)
+            if len(searchResList)>0:
+                isFound = True
+    return isFound
 
-    def getWidgetPath(self, path):
-        rootDir = os.path.abspath(path).split(os.path.sep)[0]+os.path.sep
-        dirList = []
-        for x in range(0,10):
-            path = os.path.dirname(path)
-            dirList.append(path)
-            if path == rootDir:
-                break
+def getWidgetPath(path):
+    rootDir = os.path.abspath(path).split(os.path.sep)[0]+os.path.sep
+    dirList = []
+    for x in range(0,10):
+        path = os.path.dirname(path)
+        dirList.append(path)
+        if path == rootDir:
+            break
 
-        syncPath=''
-        for path in dirList:
-            if self.isWidgetPath(path):
-                syncPath = path
-                break
-        return syncPath
+    syncPath=''
+    for path in dirList:
+        if isWidgetPath(path):
+            syncPath = path
+            break
+    return syncPath
+
+def runShellCommand(cmd,cmdLogType):
+        import platform
+        rtnCode=0
+        stdout=''
+        stderr=''
+
+        if 'darwin' in platform.system().lower():
+            p=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+            stdoutbyte,stderrbyte=p.communicate()
+            stdout=str(stdoutbyte)
+            stderr=str(stderrbyte)
+            rtnCode=p.returncode
+
+        elif 'windows' in platform.system().lower():
+            if 'logFile'==cmdLogType:
+                p=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+                stdoutbyte,stderrbyte=p.communicate()
+                stdout=str(stdoutbyte)
+                stderr=str(stderrbyte)
+                rtnCode=p.returncode
+            else:    
+                p=subprocess.Popen(cmd,shell=False)
+                p.wait()
+                rtnCode=p.returncode
+        else:
+            print('runShellCommand: the platform is not support')
+        return (rtnCode,stdout,stderr)  
+
+############################################end global function############################
+
+class ApicloudLoaderAndroidKeyCommand(sublime_plugin.TextCommand):
+    """docstring for ApicloudLoaderAndroidKeyCommand"""
 
     def run(self, edit):
         logging.basicConfig(level=logging.DEBUG,
@@ -87,14 +114,14 @@ class ApicloudLoaderKeyCommand(sublime_plugin.TextCommand):
             filename=os.path.join(curDir,'apicloud.log'),
             filemode='a')
         sublime.status_message(u'开始真机同步')
-        logging.info('*'*30+'begin key sync'+'*'*30)
+        logging.info('*'*30+'begin android key sync'+'*'*30)
 
         file_name=self.view.file_name()
-        syncPath=self.getWidgetPath(file_name)
+        syncPath=getWidgetPath(file_name)
         if len(syncPath) > 0:
             logging.info('key sync dir is '+syncPath)
             try:
-                loader = ApicloudLoaderCommand('')
+                loader = ApicloudLoaderAndroidCommand('')
                 loader.load(syncPath)
             except:
                 logging.info('run: exception happened as below')
@@ -103,19 +130,19 @@ class ApicloudLoaderKeyCommand(sublime_plugin.TextCommand):
                 # print(errMsg)
                 sublime.error_message(u'真机同步出现异常')
             sublime.status_message(u'真机同步完成')
-            logging.info('*'*30+'sync complete'+'*'*30)
+            logging.info('*'*30+'android sync complete'+'*'*30)
         else:
             sublime.error_message(u'请确保当前文件所在目录正确')
         return
 
-class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
-    """docstring for ApicloudLoaderCommand"""
+class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
+    """docstring for ApicloudLoaderAndroidCommand"""
     __adbExe='' 
     __curDir=''
     __pkgName='com.apicloud.apploader'
     __loaderName='apicloud-loader'
     __pendingVersion=''
-    __cmdLogType=''
+    __cmdLogType='' #logFile
     def __init__(self,arg):
         self.__curDir=curDir
     
@@ -137,7 +164,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
             filename=os.path.join(self.__curDir,'apicloud.log'),
             filemode='a')
         sublime.status_message(u'开始真机同步')
-        logging.info('*'*30+'begin sync'+'*'*30)
+        logging.info('*'*30+'begin android sync'+'*'*30)
         logging.info('sync dir is '+dirs[0])
         try:
             self.load(dirs[0])
@@ -148,7 +175,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
             sublime.error_message(u'真机同步出现异常')
 
         sublime.status_message(u'真机同步完成')
-        logging.info('*'*30+'sync complete'+'*'*30)
+        logging.info('*'*30+'android sync complete'+'*'*30)
         
     def checkBasicInfo(self):
         logging.info('checkBasicInfo: current dir is '+self.__curDir)
@@ -238,34 +265,6 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
             logging.info('getLoaderType: path not exiest, will use default appLoader') 
         pass
 
-    def runShellCommand(self, cmd):
-        import platform
-        rtnCode=0
-        stdout=''
-        stderr=''
-
-        if 'darwin' in platform.system().lower():
-            p=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-            stdoutbyte,stderrbyte=p.communicate()
-            stdout=str(stdoutbyte)
-            stderr=str(stderrbyte)
-            rtnCode=p.returncode
-
-        elif 'windows' in platform.system().lower():
-            if 'logFile'==self.__cmdLogType:
-                p=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-                stdoutbyte,stderrbyte=p.communicate()
-                stdout=str(stdoutbyte)
-                stderr=str(stderrbyte)
-                rtnCode=p.returncode
-            else:    
-                p=subprocess.Popen(cmd,shell=False)
-                p.wait()
-                rtnCode=p.returncode
-        else:
-            logging.info('runShellCommand: the platform is not support')
-        return (rtnCode,stdout,stderr)       
-
     def pushDirOrFileCmd(self, serialNumber, srcPath, appId):
         fulldirname=os.path.abspath(srcPath)  
         tmpPathName='tmp-apicloud-folder'
@@ -287,7 +286,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
         desPath='/sdcard/UZMap/wgt/'+appId
         pushCmd=self.__adbExe+' -s '+serialNumber+' push '+tmpPath+' '+desPath
         logging.info('pushDirOrFileCmd: pushCmd is '+pushCmd)
-        (rtnCode,stdout,stderr)=self.runShellCommand(pushCmd)
+        (rtnCode,stdout,stderr)=runShellCommand(pushCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
         logging.info('pushDirOrFileCmd: outputMsg is '+outputMsg)    
         if 'error: device not found' in outputMsg:
@@ -323,7 +322,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
         logging.info('pushStartInfo: srcPath is '+srcPath+'startInfo.txt')
         pushCmd=self.__adbExe+' -s '+serialNumber+' push '+srcPath+' '+desPath
         logging.info('pushStartInfo: pushCmd is '+pushCmd)
-        (rtnCode,stdout,stderr)=self.runShellCommand(pushCmd)
+        (rtnCode,stdout,stderr)=runShellCommand(pushCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
         logging.info('pushStartInfo: outputMsg is '+outputMsg)    
         if 'error: device not found' in outputMsg:
@@ -363,7 +362,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
         installCmd=self.__adbExe+' -s '+serialNumber+' install '+appLoader
         logging.info('installAppLoaderCmd: cmd is '+installCmd)
 
-        (rtnCode,stdout,stderr)=self.runShellCommand(installCmd)
+        (rtnCode,stdout,stderr)=runShellCommand(installCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
         logging.info('installCmd: outputMsg is '+outputMsg)    
         if len(outputMsg)>0 and 'Success' not in outputMsg:
@@ -384,7 +383,7 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
         logging.info('startApploaderCmd: pkg name is '+appLoaderPkg)
         startCmd=self.__adbExe +' -s '+serialNumber+' shell am start -W -n '+appLoaderPkg
         logging.info('startApploaderCmd: cmd is '+startCmd)
-        (rtnCode,stdout,stderr)=self.runShellCommand(startCmd)
+        (rtnCode,stdout,stderr)=runShellCommand(startCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
         logging.info('startApploaderCmd: outputMsg is '+outputMsg)
         if 'error' in outputMsg:
@@ -472,6 +471,169 @@ class ApicloudLoaderCommand(sublime_plugin.WindowCommand):
                 continue
         pass
 
+##############################################################################################
+
+class ApicloudLoaderIosKeyCommand(sublime_plugin.TextCommand):
+    """docstring for ApicloudLoaderIosKeyCommand"""
+
+    def run(self, edit):
+        logging.basicConfig(level=logging.DEBUG,
+            format='%(asctime)s %(message)s',
+            datefmt='%Y %m %d  %H:%M:%S',
+            filename=os.path.join(curDir,'apicloud.log'),
+            filemode='a')
+        sublime.status_message(u'开始IOS真机同步')
+        logging.info('*'*30+'begin ios key sync'+'*'*30)
+
+        file_name=self.view.file_name()
+        syncPath=getWidgetPath(file_name)
+        if len(syncPath) > 0:
+            logging.info('key sync dir is '+syncPath)
+            try:
+                loader = ApicloudLoaderIosCommand('')
+                loader.loadIos(syncPath)
+            except:
+                logging.info('run: exception happened as below')
+                errMsg=traceback.format_exc()
+                logging.info(errMsg)
+                print(errMsg)
+                sublime.error_message(u'IOS真机同步出现异常')
+            sublime.status_message(u'IOS真机同步完成')
+            logging.info('*'*30+'ios key sync complete'+'*'*30)
+        else:
+            sublime.error_message(u'请确保当前文件所在目录正确')
+        return
+
+class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
+    """docstring for ApicloudIOSLoaderCommand"""
+    __adbExe='' 
+    __curDir=''
+    __pkgName='com.apicloud.apploader'
+    __loaderName='apicloud-loader'
+    __cmdLogType='' #logFile
+    def __init__(self,arg):
+        self.__curDir=curDir
+    
+    def is_visible(self, dirs): 
+        return len(dirs) > 0
+
+    def is_enabled(self, dirs):
+        if 0==len(dirs):
+            return False
+        appFileList=os.listdir(dirs[0])
+        if 'config.xml' in appFileList:
+            return True
+        return False
+
+    def run(self, dirs):
+        logging.basicConfig(level=logging.DEBUG,
+            format='%(asctime)s %(message)s',
+            datefmt='%Y %m %d  %H:%M:%S',
+            filename=os.path.join(self.__curDir,'apicloud.log'),
+            filemode='a')
+        sublime.status_message(u'IOS开始真机同步')
+        logging.info('*'*30+'begin ios sync'+'*'*30)
+        logging.info('sync dir is '+dirs[0])
+        try:
+            self.loadIos(dirs[0])
+        except:
+            logging.info('run: exception happened as below')
+            errMsg=traceback.format_exc()
+            logging.info(errMsg)
+            print(errMsg)
+            sublime.error_message(u'IOS真机同步出现异常')
+
+        sublime.status_message(u'真机同步完成')
+        logging.info('*'*30+'ios sync complete'+'*'*30)
+
+    def loadIos(self, srcPath):
+        logging.info('loadIos: current dir is ')
+        if 'windows' in platform.system().lower():
+            if not os.path.exists(os.path.join(self.__curDir,'tools','jre','bin')) :
+                logging.info('loadIos: cannot find load.conf')
+                sublime.error_message(u'缺少JRE环境')
+                return
+        if not os.path.exists(os.path.join(self.__curDir,'appLoader','apicloud-loader-ios','load.conf')) or not os.path.exists(os.path.join(self.__curDir,'appLoader','apicloud-loader','load.apk')):
+            logging.info('loadIos: cannot find load.conf')
+            sublime.error_message(u'真机同步缺少文件')
+            return
+        appId=self.getAppId(srcPath)
+        self.getIosLoaderType(appId)
+        logging.info('loadIos: appId is '+ str(appId))
+        if -1==appId:
+            sublime.error_message(u'请确保目录正确')
+            return
+
+        if 'windows' in platform.system().lower():
+            javaCmd=os.path.join(self.__curDir,'tools','jre','bin','java')
+        else:
+            javaCmd='java'
+        jarFile=os.path.join(self.__curDir,'tools','syncapp.jar')
+        iosLoaderPath=os.path.join(self.__curDir,'appLoader',self.__loaderName)
+        versionFile=os.path.join(iosLoaderPath,'load.conf')
+        iosLoaderFile=os.path.join(iosLoaderPath,'load.ipa')
+
+        iosSyncCmd='"'+javaCmd+'" -jar "'+jarFile+'" "'+srcPath+'" "'+iosLoaderPath+'" "'+iosLoaderFile+'" "'+versionFile+'"'
+        logging.info('loadIos: cmd is'+iosSyncCmd)
+        
+        (rtnCode,stdout,stderr)=runShellCommand(iosSyncCmd,self.__cmdLogType)
+        outputMsg=stdout+stderr
+        logging.info('loadIos: outputMsg is '+outputMsg) 
+        
+        if 'No iOS device attached' in outputMsg:
+            sublime.error_message(u'未发现连接的设备')
+            logging.info('loadIos: no ios device found !')
+        elif 'error' in outputMsg or 'failed' in outputMsg:
+            logging.info('loadIos: failed to sync ios')
+            sublime.error_message(u'IOS真机同步失败')
+        else:
+            logging.info('loadIos: ios sync success.')
+            sublime.message_dialog(u'IOS真机同步成功')
+
+    def getAppId(self, srcPath):
+        logging.info('begin getAppId: srcPath is '+srcPath)
+        appId=-1
+        if not os.path.exists(srcPath) or not os.path.isdir(srcPath):
+            logging.info('getAppId:file no exist or not a folder!')
+            return appId
+        appFileList=os.listdir(srcPath)
+        if 'config.xml' not in appFileList:
+            logging.info('getAppId: please make sure sync the correct folder!')
+            return -1
+        with open(os.path.join(srcPath,"config.xml"),encoding='utf-8') as f:
+            fileContent=f.read()
+            r=re.compile(r"widget.*id.*=.*(A[0-9]{13})\"")
+            searchResList=r.findall(fileContent)  
+        if len(searchResList)>0:
+            appId=searchResList[0]
+        logging.info('getAppId: appId is '+appId)
+        return appId       
+
+    def getIosLoaderType(self,appId):
+        logging.info('getIosLoaderType: begin getIosLoaderType')
+        appIdPath=os.path.join(self.__curDir,'appLoader','custom-loader-ios',appId)
+        logging.info('getIosLoaderType: appIdPath is '+os.path.join(appIdPath,'load.conf'))
+        
+        if os.path.exists(os.path.join(appIdPath,'load.conf')) and os.path.exists(os.path.join(appIdPath,'load.ipa')):
+            logging.info('getIosLoaderType: It is may a customerized loader.')
+            with open(os.path.join(appIdPath,'load.conf')) as f:
+                config=json.load(f)
+                logging.info('getIosLoaderType: load.conf content is '+str(config))
+                if 'version' in config:
+                    version=config['version'].strip()
+                if 'packageName' in config:
+                    pkgName=config['packageName'].strip()
+
+                if len(version)>0 and len(pkgName)>0:
+                    self.__pkgName=pkgName
+                    self.__loaderName='custom-loader-ios'+os.path.sep+appId
+                logging.info('getIosLoaderType: pkgName is '+self.__pkgName)
+        else:
+            self.__pkgName='com.apicloud.apploader'
+            self.__loaderName='apicloud-loader-ios'    
+            logging.info('getIosLoaderType: path not exiest, will use default appLoader') 
+        pass         
+		
 import functools
 class NewApicloudDefaultAppCommand(sublime_plugin.WindowCommand):
     def run(self, dirs):
