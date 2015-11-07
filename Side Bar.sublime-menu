@@ -23,6 +23,7 @@
 		]
 	    },
 	{ "caption": "新建APICloud文件..", "command": "apicloud_new_html", "args": {"dirs": []} },    
-	{ "caption": "真机同步..", "command": "apicloud_loader", "args": {"dirs": []} },    
+	{ "caption": "Android真机同步..", "command": "apicloud_loader_android", "args": {"dirs": []} },    
+	{ "caption": "IOS真机同步..", "command": "apicloud_loader_ios", "args": {"dirs": []} },    
 	{ "caption": "压缩Widget包..", "command": "compress_widget", "args": {"dirs": []} }
 ]

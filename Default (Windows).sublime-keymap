@@ -1,3 +1,4 @@
 [
-	{ "keys": ["ctrl+r"], "command": "apicloud_loader_key" },
+	{ "keys": ["ctrl+r"], "command": "apicloud_loader_android_key" },
+	{ "keys": ["ctrl+alt+r"], "command": "apicloud_loader_ios_key" }
 ]
