@@ -553,6 +553,12 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
                 logging.info('loadIos: cannot find load.conf')
                 sublime.error_message(u'缺少JRE环境')
                 return
+        else: 
+            (rtnCode,stdout,stderr)=runShellCommand('java -version',self.__cmdLogType)
+            outputMsg=stdout+stderr
+            if 'version' not in outputMsg:
+                sublime.error_message(u'缺少JRE环境')
+                return
         if not os.path.exists(os.path.join(self.__curDir,'appLoader','apicloud-loader-ios','load.conf')) or not os.path.exists(os.path.join(self.__curDir,'appLoader','apicloud-loader','load.apk')):
             logging.info('loadIos: cannot find load.conf')
             sublime.error_message(u'真机同步缺少文件')
