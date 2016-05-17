@@ -121,6 +121,7 @@ class ApicloudLoaderAndroidKeyCommand(sublime_plugin.TextCommand):
         if len(syncPath) > 0:
             logging.info('key sync dir is '+syncPath)
             try:
+                BeforeSystemRequests()
                 loader = ApicloudLoaderAndroidCommand('')
                 loader.load(syncPath)
             except:
@@ -167,6 +168,7 @@ class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
         logging.info('*'*30+'begin android sync'+'*'*30)
         logging.info('sync dir is '+dirs[0])
         try:
+            BeforeSystemRequests()
             self.load(dirs[0])
         except:
             logging.info('run: exception happened as below')
@@ -490,6 +492,7 @@ class ApicloudLoaderIosKeyCommand(sublime_plugin.TextCommand):
         if len(syncPath) > 0:
             logging.info('key sync dir is '+syncPath)
             try:
+                BeforeSystemRequests()
                 loader = ApicloudLoaderIosCommand('')
                 loader.loadIos(syncPath)
             except:
@@ -535,6 +538,7 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
         logging.info('*'*30+'begin ios sync'+'*'*30)
         logging.info('sync dir is '+dirs[0])
         try:
+            BeforeSystemRequests()
             self.loadIos(dirs[0])
         except:
             logging.info('run: exception happened as below')
@@ -639,7 +643,45 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
             self.__loaderName='apicloud-loader-ios'    
             logging.info('getIosLoaderType: path not exiest, will use default appLoader') 
         pass         
-		
+
+import os,platform,uuid,urllib.parse,urllib.request,json
+def BeforeSystemRequests():
+    '''
+    the systeminfo uploads to api of ..
+    '''
+    def get_system_version():
+        system_name = platform.system()
+        if system_name == 'Windows' and os.name == 'nt':
+            system_machine = platform.platform().split('-')[0] + platform.platform().split('-')[1]
+        elif system_name == 'Darwin':
+            system_machine = 'Mac-os'
+        else:
+            system_machine = system_name
+        return system_machine
+
+    def post(url,data):
+        data = urllib.parse.urlencode({'info':data}).encode('utf-8')
+        req = urllib.request.Request(url,data)
+        urllib.request.urlopen(req)
+        return
+    def index():
+        apiUrl = 'http://www.apicloud.com/setSublimeInfo'
+        systemInfo = {
+            "system": get_system_version(),
+            "uuid": hex(uuid.getnode())
+        }
+        try:
+            systemInfo = json.dumps(systemInfo) 
+            post(apiUrl,systemInfo)
+        except Exception as e:
+            print('exception is :',e)
+        finally:
+            pass
+    try:        
+        index()
+    except Exception as e:
+        pass   
+
 import functools
 class NewApicloudDefaultAppCommand(sublime_plugin.WindowCommand):
     def run(self, dirs):
