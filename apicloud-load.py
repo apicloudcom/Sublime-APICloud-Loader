@@ -49,7 +49,7 @@ class ApicloudNewHtmlCommand(sublime_plugin.WindowCommand):
 def isWidgetPath(path):
     isFound = False
     appFileList=os.listdir(path)
-    if 'config.xml' in appFileList and 'index.html' in appFileList:
+    if 'config.xml' in appFileList:
         with open(os.path.join(path,"config.xml"),encoding='utf-8') as f:
             fileContent=f.read()
             r=re.compile(r"widget.*id.*=.*(A[0-9]{13})\"")
@@ -94,7 +94,7 @@ def runShellCommand(cmd,cmdLogType):
                 stdout=str(stdoutbyte)
                 stderr=str(stderrbyte)
                 rtnCode=p.returncode
-            else:    
+            else:
                 p=subprocess.Popen(cmd,shell=False)
                 p.wait()
                 rtnCode=p.returncode
@@ -138,6 +138,7 @@ class ApicloudLoaderAndroidKeyCommand(sublime_plugin.TextCommand):
 
 class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
     """docstring for ApicloudLoaderAndroidCommand"""
+    __ignore=''
     __adbExe='' 
     __curDir=''
     __pkgName='com.apicloud.apploader'
@@ -254,11 +255,15 @@ class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
                     version=config['version'].strip()
                 if 'packageName' in config:
                     pkgName=config['packageName'].strip()
+                if 'ignore' in config:
+                    ignore=config['ignore']
 
+                # 彭蔚
                 if len(version)>0 and len(pkgName)>0:
                     self.__pendingVersion=version
                     self.__pkgName=pkgName
                     self.__loaderName='custom-loader'+os.path.sep+appId
+                    self.__ignore=ignore
                 logging.info('getLoaderType: pendingVerion is '+self.__pendingVersion)
                 logging.info('getLoaderType: pkgName is '+self.__pkgName)
         else:
@@ -275,19 +280,13 @@ class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
         if os.path.exists(tmpPath):
             self.CleanDir(tmpPath)
             os.rmdir(tmpPath)
-        shutil.copytree(srcPath,tmpPath)
-        for (p,d,f) in os.walk(tmpPath):  
-            if p.find('.svn')>0:  
-                if 'windows' in platform.system().lower():
-                    os.popen('rd /s /q %s'%p) 
-                elif 'darwin' in platform.system().lower():
-                    os.popen('rm -rf %s'%p) 
-       
+        # shutil.copytree(srcPath,tmpPath,ignore = shutil.ignore_patterns(".svn","node_modules"))
+        shutil.copytree(srcPath,tmpPath,ignore = shutil.ignore_patterns(*self.__ignore))
         logging.info('begin pushDirOrFileCmd from '+srcPath+' for appId '+appId)
         sublime.status_message(u'开始推送widget包')
         desPath='/sdcard/UZMap/wgt/'+appId
         pushCmd=self.__adbExe+' -s '+serialNumber+' push '+tmpPath+' '+desPath
-        logging.info('pushDirOrFileCmd: pushCmd is '+pushCmd)
+        logging.info('pushDirOrFileCmd: pushCmd is '+pushCmd+' '+self.__cmdLogType)
         (rtnCode,stdout,stderr)=runShellCommand(pushCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
         logging.info('pushDirOrFileCmd: outputMsg is '+outputMsg)    
@@ -509,6 +508,7 @@ class ApicloudLoaderIosKeyCommand(sublime_plugin.TextCommand):
 
 class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
     """docstring for ApicloudIOSLoaderCommand"""
+    __ignore=''
     __adbExe='' 
     __curDir=''
     __pkgName='com.apicloud.apploader'
@@ -578,18 +578,26 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
             javaCmd=os.path.join(self.__curDir,'tools','jre','bin','java')
         else:
             javaCmd='java'
+        # 彭蔚
+        fulldirname=os.path.abspath(srcPath)  
+        tmpPathName='tmp-apicloud-folder'
+        tmpPath=os.path.join(os.path.dirname(srcPath),tmpPathName)
+        
+        if os.path.exists(tmpPath):
+            self.CleanDir(tmpPath)
+            os.rmdir(tmpPath)
+        shutil.copytree(srcPath,tmpPath,ignore = shutil.ignore_patterns(*self.__ignore))    
+        # 彭蔚
         jarFile=os.path.join(self.__curDir,'tools','syncapp.jar')
         iosLoaderPath=os.path.join(self.__curDir,'appLoader',self.__loaderName)
         versionFile=os.path.join(iosLoaderPath,'load.conf')
         iosLoaderFile=os.path.join(iosLoaderPath,'load.ipa')
 
-        iosSyncCmd='"'+javaCmd+'" -jar "'+jarFile+'" "'+srcPath+'" "'+iosLoaderPath+'" "'+iosLoaderFile+'" "'+versionFile+'"'
+        iosSyncCmd='"'+javaCmd+'" -jar "'+jarFile+'" "'+tmpPath+'" "'+iosLoaderPath+'" "'+iosLoaderFile+'" "'+versionFile+'"'
         logging.info('loadIos: cmd is'+iosSyncCmd)
-        
         (rtnCode,stdout,stderr)=runShellCommand(iosSyncCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
         logging.info('loadIos: outputMsg is '+outputMsg) 
-        
         if 'No iOS device attached' in outputMsg:
             sublime.error_message(u'未发现连接的设备')
             logging.info('loadIos: no ios device found !')
@@ -599,6 +607,22 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
         else:
             logging.info('loadIos: ios sync success.')
             sublime.message_dialog(u'IOS真机同步完成')
+        self.CleanDir(tmpPath)
+        os.rmdir(tmpPath)
+        
+    def CleanDir(self, Dir):
+        if os.path.isdir( Dir ):
+            paths = os.listdir( Dir )
+            for path in paths:
+                filePath = os.path.join( Dir, path )
+                if os.path.isfile( filePath ):
+                    try:
+                        os.remove( filePath )
+                    except os.error:
+                        autoRun.exception( "remove %s error." %filePath )
+                elif os.path.isdir( filePath ):
+                    shutil.rmtree(filePath,True)
+        return True
 
     def getAppId(self, srcPath):
         logging.info('begin getAppId: srcPath is '+srcPath)
@@ -633,10 +657,13 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
                     version=config['version'].strip()
                 if 'packageName' in config:
                     pkgName=config['packageName'].strip()
+                if 'ignore' in config:
+                    ignore=config['ignore']
 
                 if len(version)>0 and len(pkgName)>0:
                     self.__pkgName=pkgName
                     self.__loaderName='custom-loader-ios'+os.path.sep+appId
+                    self.__ignore=ignore
                 logging.info('getIosLoaderType: pkgName is '+self.__pkgName)
         else:
             self.__pkgName='com.apicloud.apploader'
@@ -802,9 +829,11 @@ class CompressWidgetCommand(sublime_plugin.WindowCommand):
                 return
 
         for root, dirlist, files in os.walk(dirname):  
-            for filename in files:  
-                filelist.append(os.path.join(root,filename))  
-
+            for filename in files:
+                path=os.path.join(root,filename)
+                if not path.find('.svn')>0 and not path.find('node_modules')>0:
+                    filelist.append(path)  
+                    logging.info(path)
         destZip=zipfile.ZipFile(fullzipfilename, "w")  
         for eachfile in filelist:  
             destfile=eachfile[len(dirname):]  
