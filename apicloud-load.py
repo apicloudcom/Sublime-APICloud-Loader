@@ -272,21 +272,31 @@ class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
         tmpPathName='tmp-apicloud-folder'
         tmpPath=os.path.join(os.path.dirname(srcPath),tmpPathName)
         
+        for (p,d,f) in os.walk(tmpPath):  
+            logging.info(p)
+            if p.find('.svn')>0 or p.find('.git')>0:  
+                if 'windows' in platform.system().lower():
+                    os.popen('rd /s /q %s'%p) 
+                elif 'darwin' in platform.system().lower():
+                    os.popen('rm -rf %s'%p)         
+        
         if os.path.exists(tmpPath):
             self.CleanDir(tmpPath)
             os.rmdir(tmpPath)
         shutil.copytree(srcPath,tmpPath)
+
         for (p,d,f) in os.walk(tmpPath):  
-            if p.find('.svn')>0:  
+            logging.info(p)
+            if p.find('.svn')>0 or p.find('.git')>0:  
                 if 'windows' in platform.system().lower():
                     os.popen('rd /s /q %s'%p) 
                 elif 'darwin' in platform.system().lower():
-                    os.popen('rm -rf %s'%p) 
+                    os.popen('rm -rf %s'%p)      
        
         logging.info('begin pushDirOrFileCmd from '+srcPath+' for appId '+appId)
         sublime.status_message(u'开始推送widget包')
         desPath='/sdcard/UZMap/wgt/'+appId
-        pushCmd=self.__adbExe+' -s '+serialNumber+' push '+tmpPath+' '+desPath
+        pushCmd=self.__adbExe+' -s '+serialNumber+' push "'+tmpPath+'" '+desPath
         logging.info('pushDirOrFileCmd: pushCmd is '+pushCmd)
         (rtnCode,stdout,stderr)=runShellCommand(pushCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
@@ -585,7 +595,7 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
 
         iosSyncCmd='"'+javaCmd+'" -jar "'+jarFile+'" "'+srcPath+'" "'+iosLoaderPath+'" "'+iosLoaderFile+'" "'+versionFile+'"'
         logging.info('loadIos: cmd is'+iosSyncCmd)
-        
+        self.__cmdLogType = 'logFile'
         (rtnCode,stdout,stderr)=runShellCommand(iosSyncCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
         logging.info('loadIos: outputMsg is '+outputMsg) 
