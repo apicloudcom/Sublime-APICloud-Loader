@@ -144,6 +144,7 @@ class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
     __loaderName='apicloud-loader'
     __pendingVersion=''
     __cmdLogType='' #logFile
+    __ignore=[".svn",".git"]
     def __init__(self,arg):
         self.__curDir=curDir
     
@@ -203,6 +204,8 @@ class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
                 self.__pendingVersion=config['version']
             if 'cmdLogType' in config:
                 self.__cmdLogType=config['cmdLogType']
+            if 'ignore' in config:
+                self.__ignore=config['ignore']
         return 0
 
     def getDeviceListCmd(self):
@@ -271,28 +274,18 @@ class ApicloudLoaderAndroidCommand(sublime_plugin.WindowCommand):
         fulldirname=os.path.abspath(srcPath)  
         tmpPathName='tmp-apicloud-folder'
         tmpPath=os.path.join(os.path.dirname(srcPath),tmpPathName)
-        
+        # force delete .git which is read only
         for (p,d,f) in os.walk(tmpPath):  
-            logging.info(p)
-            if p.find('.svn')>0 or p.find('.git')>0:  
+            if p.find('.git')>0:  
                 if 'windows' in platform.system().lower():
                     os.popen('rd /s /q %s'%p) 
                 elif 'darwin' in platform.system().lower():
-                    os.popen('rm -rf %s'%p)         
-        
+                    os.popen('rm -rf %s'%p) 
         if os.path.exists(tmpPath):
             self.CleanDir(tmpPath)
             os.rmdir(tmpPath)
-        shutil.copytree(srcPath,tmpPath)
 
-        for (p,d,f) in os.walk(tmpPath):  
-            logging.info(p)
-            if p.find('.svn')>0 or p.find('.git')>0:  
-                if 'windows' in platform.system().lower():
-                    os.popen('rd /s /q %s'%p) 
-                elif 'darwin' in platform.system().lower():
-                    os.popen('rm -rf %s'%p)      
-       
+        shutil.copytree(srcPath,tmpPath,ignore = shutil.ignore_patterns(*self.__ignore))
         logging.info('begin pushDirOrFileCmd from '+srcPath+' for appId '+appId)
         sublime.status_message(u'开始推送widget包')
         desPath='/sdcard/UZMap/wgt/'+appId
@@ -524,6 +517,8 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
     __pkgName='com.apicloud.apploader'
     __loaderName='apicloud-loader'
     __cmdLogType='' #logFile
+    __ignore=['.svn','.git']
+
     def __init__(self,arg):
         self.__curDir=curDir
     
@@ -560,6 +555,20 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
         sublime.status_message(u'真机同步完成')
         logging.info('*'*30+'ios sync complete'+'*'*30)
 
+    def CleanDir(self, Dir):
+        if os.path.isdir( Dir ):
+            paths = os.listdir( Dir )
+            for path in paths:
+                filePath = os.path.join( Dir, path )
+                if os.path.isfile( filePath ):
+                    try:
+                        os.remove( filePath )
+                    except os.error:
+                        autoRun.exception( "remove %s error." %filePath )
+                elif os.path.isdir( filePath ):
+                    shutil.rmtree(filePath,True)
+        return True        
+
     def loadIos(self, srcPath):
         logging.info('loadIos: current dir is ')
         if 'windows' in platform.system().lower():
@@ -588,6 +597,22 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
             javaCmd=os.path.join(self.__curDir,'tools','jre','bin','java')
         else:
             javaCmd='java'
+
+        fulldirname=os.path.abspath(srcPath)  
+        tmpPathName='tmp-apicloud-folder'
+        tmpPath=os.path.join(os.path.dirname(srcPath),tmpPathName)
+        # force delete .git which is read only
+        for (p,d,f) in os.walk(tmpPath):  
+            if p.find('.git')>0:  
+                if 'windows' in platform.system().lower():
+                    os.popen('rd /s /q %s'%p) 
+                elif 'darwin' in platform.system().lower():
+                    os.popen('rm -rf %s'%p) 
+        if os.path.exists(tmpPath):
+            self.CleanDir(tmpPath)
+            os.rmdir(tmpPath)
+        shutil.copytree(srcPath,tmpPath,ignore = shutil.ignore_patterns(*self.__ignore))
+
         jarFile=os.path.join(self.__curDir,'tools','syncapp.jar')
         iosLoaderPath=os.path.join(self.__curDir,'appLoader',self.__loaderName)
         versionFile=os.path.join(iosLoaderPath,'load.conf')
@@ -595,10 +620,11 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
 
         iosSyncCmd='"'+javaCmd+'" -jar "'+jarFile+'" "'+srcPath+'" "'+iosLoaderPath+'" "'+iosLoaderFile+'" "'+versionFile+'"'
         logging.info('loadIos: cmd is'+iosSyncCmd)
-        self.__cmdLogType = 'logFile'
         (rtnCode,stdout,stderr)=runShellCommand(iosSyncCmd,self.__cmdLogType)
         outputMsg=stdout+stderr
-        logging.info('loadIos: outputMsg is '+outputMsg) 
+        logging.info('loadIos: outputMsg is '+outputMsg)
+        self.CleanDir(tmpPath)
+        os.rmdir(tmpPath)
         
         if 'No iOS device attached' in outputMsg:
             sublime.error_message(u'未发现连接的设备')
@@ -643,6 +669,8 @@ class ApicloudLoaderIosCommand(sublime_plugin.WindowCommand):
                     version=config['version'].strip()
                 if 'packageName' in config:
                     pkgName=config['packageName'].strip()
+                if 'ignore' in config:
+                    self.__ignore==config['ignore']
 
                 if len(version)>0 and len(pkgName)>0:
                     self.__pkgName=pkgName
