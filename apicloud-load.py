@@ -60,7 +60,7 @@ class EnApicloudNewHtmlCommand(sublime_plugin.WindowCommand):
             v.settings().set('default_dir', dirs[0])
 
     def is_visible(self, dirs):
-        return len(dirs) == 1 and settings.get("envlang") == "fr"
+        return len(dirs) == 1 and settings.get("envlang") == "en"
 
 class FrApicloudNewHtmlCommand(sublime_plugin.WindowCommand):
     def run(self, dirs):
