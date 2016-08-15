@@ -6,8 +6,8 @@ import sys
 curDir = os.path.dirname(os.path.realpath(__file__))
 
 settings = {}
-settings = sublime.load_settings("APICloudLoader.sublime-settings")
-#print(settings.get("envlang"))
+settings = sublime.load_settings("Preferences.sublime-settings")
+print(settings.get("envlang"))
 
 
 html = '''<!DOCTYPE html>
@@ -1844,7 +1844,12 @@ class NewApicloudDefaultAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','default'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -1866,8 +1871,13 @@ class EnNewApicloudDefaultAppCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, dir, name):
         import shutil
-        shutil.copytree(os.path.join(curDir,'appLoader','widget','default=True'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        shutil.copytree(os.path.join(curDir,'appLoader','widget','default'),os.path.join(dir, name))
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -1890,7 +1900,12 @@ class FrNewApicloudDefaultAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','default'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -1913,7 +1928,12 @@ class NewApicloudBottomAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','bottom'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -1936,7 +1956,12 @@ class EnNewApicloudBottomAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','bottom'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -1959,7 +1984,12 @@ class FrNewApicloudBottomAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','bottom'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -1982,7 +2012,12 @@ class NewApicloudHomeAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','home'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -2005,7 +2040,12 @@ class EnNewApicloudHomeAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','home'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -2028,7 +2068,12 @@ class FrNewApicloudHomeAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','home'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -2051,7 +2096,12 @@ class NewApicloudSlideAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','slide'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -2074,7 +2124,12 @@ class EnNewApicloudSlideAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','slide'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
@@ -2097,7 +2152,12 @@ class FrNewApicloudSlideAppCommand(sublime_plugin.WindowCommand):
     def on_done(self, dir, name):
         import shutil
         shutil.copytree(os.path.join(curDir,'appLoader','widget','slide'),os.path.join(dir, name))
-        desFile=os.path.join(dir, name)+"\\config.xml"
+        if 'windows' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"\\config.xml"
+        elif 'darwin' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
+        elif 'linux' in platform.system().lower():
+            desFile=os.path.join(dir, name)+"/config.xml"
         inputFile=open(desFile,encoding='utf-8')  
         lines=inputFile.readlines()  
         inputFile.close()
