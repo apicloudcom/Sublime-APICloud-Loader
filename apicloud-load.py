@@ -5,9 +5,12 @@ import sys
 
 curDir = os.path.dirname(os.path.realpath(__file__))
 
-settings = {}
-settings = sublime.load_settings("Preferences.sublime-settings")
-print(settings.get("envlang"))
+def plugin_loaded():
+    global settings
+    settings = {}
+    settings = sublime.load_settings("APICloudLoader.sublime-settings")
+    print("settings loaded!")
+    print(settings.get("envlang"))
 
 
 html = '''<!DOCTYPE html>
