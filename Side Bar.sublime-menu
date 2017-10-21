@@ -8,22 +8,62 @@
 				"command": "new_apicloud_default_app", "args": {"dirs": []}
 			},
 			{
+				"caption": "Blank application",
+				"command": "en_new_apicloud_default_app", "args": {"dirs": []}
+			},
+			{
+				"caption": "Application vide",
+				"command": "fr_new_apicloud_default_app", "args": {"dirs": []}
+			},
+			{
 				"caption": "底部导航",
 				"command": "new_apicloud_bottom_app", "args": {"dirs": []}
+			},
+			{
+				"caption": "Bottom navigation",
+				"command": "en_new_apicloud_bottom_app", "args": {"dirs": []}
+			},
+			{
+				"caption": "Navigation inferieure",
+				"command": "fr_new_apicloud_bottom_app", "args": {"dirs": []}
 			},
 			{
 				"caption": "首页导航",
 				"command": "new_apicloud_home_app", "args": {"dirs": []}
 			},
 			{
+				"caption": "Home page",
+				"command": "en_new_apicloud_home_app", "args": {"dirs": []}
+			},
+			{
+				"caption": "Page d'accueil",
+				"command": "fr_new_apicloud_home_app", "args": {"dirs": []}
+			},
+			{
 				"caption": "侧边导航",
 				"command": "new_apicloud_slide_app", "args": {"dirs": []}
+			},
+			{
+				"caption": "Side navigation",
+				"command": "en_new_apicloud_slide_app", "args": {"dirs": []}
+			},
+			{
+				"caption": "Navigation laterale",
+				"command": "fr_new_apicloud_slide_app", "args": {"dirs": []}
 			}
 
 		]
 	    },
 	{ "caption": "新建APICloud文件..", "command": "apicloud_new_html", "args": {"dirs": []} },    
+	{ "caption": "New APICloud file..", "command": "en_apicloud_new_html", "args": {"dirs": []} },    
+	{ "caption": "Nouveau fichier APICloud..", "command": "fr_apicloud_new_html", "args": {"dirs": []} },    	
 	{ "caption": "Android真机同步..", "command": "apicloud_loader_android", "args": {"dirs": []} },    
+	{ "caption": "Android-device synchronization..", "command": "en_apicloud_loader_android", "args": {"dirs": []} },    
+	{ "caption": "Synchronisation terminal Android..", "command": "fr_apicloud_loader_android", "args": {"dirs": []} },    	
 	{ "caption": "IOS真机同步..", "command": "apicloud_loader_ios", "args": {"dirs": []} },    
-	{ "caption": "压缩Widget包..", "command": "compress_widget", "args": {"dirs": []} }
+	{ "caption": "IOS-device synchronization..", "command": "en_apicloud_loader_ios", "args": {"dirs": []} },    
+	{ "caption": "Synchronisation terminal IOS..", "command": "fr_apicloud_loader_ios", "args": {"dirs": []} },    	
+	{ "caption": "压缩Widget包..", "command": "compress_widget", "args": {"dirs": []} },
+	{ "caption": "Widget Compression..", "command": "en_compress_widget", "args": {"dirs": []} },
+	{ "caption": "Compression du Widget..", "command": "fr_compress_widget", "args": {"dirs": []} }	
 ]
